@@ -109,6 +109,7 @@ const CategoriesPage = () => {
           setForceUpdate={setForceUpdate}
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
+          setIsLoading={setIsLoading}
           item="category"
         />
       )}
@@ -193,7 +194,6 @@ const CategoriesPage = () => {
           }}
         />
       )}
-
       {isLoading && (
         <Box
           sx={{

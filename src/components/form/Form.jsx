@@ -45,6 +45,7 @@ export default function Form({
   currentItem,
   setCurrentItem,
   // type,
+  setIsLoading,
   item,
 }) {
   const { t } = useTranslation();
@@ -69,6 +70,7 @@ export default function Form({
     gap: "15px",
   };
   const submit = (event) => {
+    setIsLoading(true);
     event.preventDefault();
     const form = event.target;
     setFormOpen(false);

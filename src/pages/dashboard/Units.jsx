@@ -92,6 +92,7 @@ const UnitsPage = () => {
           setForceUpdate={setForceUpdate}
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
+          setIsLoading={setIsLoading}
           item="unit"
         />
       )}

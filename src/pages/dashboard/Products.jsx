@@ -104,6 +104,7 @@ const ProductsPage = () => {
           setForceUpdate={setForceUpdate}
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
+          setIsLoading={setIsLoading}
           item="product"
         />
       )}
