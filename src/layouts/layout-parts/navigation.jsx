@@ -29,10 +29,10 @@ export const navigationsEn = [
         name: "Products",
         path: "/dashboard/products",
       },
-      // {
-      //   name: "Services",
-      //   path: "/dashboard/add-user",
-      // },
+      {
+        name: "Services",
+        path: "/dashboard/services",
+      },
       // {
       //   name: "Items",
       //   path: "/dashboard/add-user",
@@ -103,10 +103,10 @@ export const navigationsAr = [
         name: "المنتجات",
         path: "/dashboard/products",
       },
-      // {
-      //   name: "Services",
-      //   path: "/dashboard/add-user",
-      // },
+      {
+        name: "الخدمات",
+        path: "/dashboard/services",
+      },
       // {
       //   name: "Items",
       //   path: "/dashboard/add-user",

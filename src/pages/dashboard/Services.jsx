@@ -42,16 +42,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 // ==============================|| Component ||============================== //
-const ProductsPage = () => {
+const ServicesPage = () => {
   const [data, setData] = useState({});
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentItem, setCurrentItem] = useState({
-    product_items: [],
-    purchase_price: "",
-    sales_price: "",
-    item: "",
-  });
+  const [currentItem, setCurrentItem] = useState({});
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -64,7 +59,7 @@ const ProductsPage = () => {
       ? `page=${page}&paginate=true&search=${searchQuery}`
       : `page=${page}&paginate=true`;
     axios
-      .get(`${baseUrl}/productsServices/product?${queryParams}`, {
+      .get(`${baseUrl}/productsServices/services?${queryParams}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
         },
@@ -99,7 +94,7 @@ const ProductsPage = () => {
         setDialogOpen={setDialogOpen}
         setIsLoading={setIsLoading}
         setForceUpdate={setForceUpdate}
-        item="product"
+        item="service"
         currentItem={currentItem}
         setCurrentItem={setCurrentItem}
       />
@@ -110,7 +105,7 @@ const ProductsPage = () => {
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
           setIsLoading={setIsLoading}
-          item="product"
+          item="service"
         />
       )}
       <Box
@@ -225,15 +220,15 @@ const ProductsPage = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">Disabled</StyledTableCell>
-                  <StyledTableCell align="center">Has Item?</StyledTableCell>
+                  {/* <StyledTableCell align="center">Has Item?</StyledTableCell> */}
                   <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">Image</StyledTableCell>
                   <StyledTableCell align="center">Code</StyledTableCell>
                   <StyledTableCell align="center">
-                    English Product Name
+                    English Service Name
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    Arabic Product Name
+                    Arabic Service Name
                   </StyledTableCell>
                   <StyledTableCell align="center">Sales Price</StyledTableCell>
                   <StyledTableCell align="center">
@@ -257,13 +252,13 @@ const ProductsPage = () => {
                         <div className="red">No</div>
                       )}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
+                    {/* <StyledTableCell align="center">
                       {item.has_item ? (
                         <div className="green">Yes</div>
                       ) : (
                         <div className="red">No</div>
                       )}
-                    </StyledTableCell>
+                    </StyledTableCell> */}
                     <StyledTableCell align="center">
                       {
                         categories?.filter(
@@ -357,4 +352,4 @@ const ProductsPage = () => {
     </>
   );
 };
-export default ProductsPage;
+export default ServicesPage;

@@ -18,6 +18,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
 const removeTrailingZeros = (numberString) => {
   // Convert the string to a number to remove trailing zeros
   const number = parseFloat(numberString);
@@ -50,6 +53,7 @@ export default function Form({
 }) {
   const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
+  const [items, setItems] = useState([]);
   console.log("currentItem=====>", currentItem);
   const downSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const style = {
@@ -104,6 +108,18 @@ export default function Form({
         name: currentItem.name,
         code: currentItem.code,
         disabled: currentItem.disabled,
+        // has_item: currentItem.has_item,
+        purchase_price: currentItem.purchase_price,
+        sales_price: currentItem.sales_price,
+        category: currentItem.category,
+        image: currentItem.image,
+      };
+    }
+    if (item === "service") {
+      body = {
+        name: currentItem.name,
+        code: currentItem.code,
+        disabled: currentItem.disabled,
         has_item: currentItem.has_item,
         purchase_price: currentItem.purchase_price,
         sales_price: currentItem.sales_price,
@@ -137,7 +153,7 @@ export default function Form({
   useEffect(() => {
     // remove image url for 1st time, as it needed as a binary not url (if present or not, as it will be removed later from headers and body in any case if have no value)
     setCurrentItem((prev) => ({ ...prev, image: "" }));
-    if (item === "category" || item === "product") {
+    if (item === "category" || item === "product" || item === "service") {
       axios
         .get(`${baseUrl}/productsServices/category?parent=false`, {
           headers: {
@@ -146,6 +162,21 @@ export default function Form({
         })
         .then((res) => {
           setCategories(res.data);
+        })
+        .catch((err) => {
+          notifyError("Something went wrong!");
+        });
+    }
+    if (item === "product") {
+      axios
+        .get(`${baseUrl}/productsServices/items`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
+          },
+        })
+        .then((res) => {
+          console.log("zzzzzzzzzzzzz", res.data);
+          setItems(res.data);
         })
         .catch((err) => {
           notifyError("Something went wrong!");
@@ -509,27 +540,146 @@ export default function Form({
               }
               label={t("form.disabled")}
             />
-            <FormControlLabel
+            <Box
               sx={{
                 width: "100%",
-                "& span": {
-                  fontSize: "14px !important",
-                },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
-              control={
-                <Switch
-                  checked={currentItem?.has_item}
-                  onChange={(e) => {
-                    setCurrentItem((prev) => ({
-                      ...prev,
-                      has_item: e.target.checked,
-                    }));
+            >
+              <FormControlLabel
+                sx={{
+                  "& span": {
+                    fontSize: "14px !important",
+                  },
+                }}
+                control={
+                  <Switch
+                    checked={currentItem?.has_item}
+                    onChange={(e) => {
+                      setCurrentItem((prev) => ({
+                        ...prev,
+                        has_item: e.target.checked,
+                      }));
+                    }}
+                    color="success"
+                  />
+                }
+                label={t("form.has_item")}
+              />
+              {currentItem?.has_item && (
+                <IconButton
+                  color="primary"
+                  aria-label="add to shopping cart"
+                  sx={{
+                    ml: "auto",
+                    p: 0,
+                    m: 0,
                   }}
-                  color="success"
-                />
-              }
-              label={t("form.has_item")}
-            />
+                >
+                  <AddCircleIcon
+                    color="success"
+                    sx={{ fontSize: 30 }}
+                    onClick={(e) => {
+                      console.log(currentItem.product_items);
+                      setCurrentItem((prev) => ({
+                        ...prev,
+                        product_items: [
+                          ...prev.product_items,
+                          { item: "", measurement: "" },
+                        ],
+                      }));
+                    }}
+                  />
+                </IconButton>
+              )}
+            </Box>
+            {currentItem.product_items?.length > 0 &&
+              currentItem.product_items.map((item, index) => (
+                <Box
+                  className="full_width"
+                  sx={{
+                    display: "flex",
+                    // justifyContent: "space-between",
+                    gap: "14px",
+                    alignItems: "center",
+                    border: "2px dashed gray",
+                    p: "10px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <FormControl className="third_width" size="small" required>
+                    <InputLabel>Item</InputLabel>
+                    <Select
+                      value={item?.item}
+                      label="Item"
+                      onChange={(e) => {
+                        console.log("after");
+                        const clonedProductsItems = [
+                          ...currentItem.product_items,
+                        ];
+                        clonedProductsItems[index].item = +e.target.value;
+                        setCurrentItem((prev) => ({
+                          ...prev,
+                          product_items: clonedProductsItems,
+                        }));
+                      }}
+                    >
+                      {/* <MenuItem value="">No Category Chosen</MenuItem> */}
+                      {items?.results?.map((item) => (
+                        <MenuItem value={item.id}>{item.name.en}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    className="third_width"
+                    label={"measurement"}
+                    id="measurement"
+                    value={item?.measurement}
+                    onChange={(e) => {
+                      const regex = /^[0-9.]*$/;
+                      if (e.target.value === "" || regex.test(e.target.value)) {
+                        const clonedProductsItems = [
+                          ...currentItem.product_items,
+                        ];
+                        clonedProductsItems[index].measurement =
+                          +e.target.value;
+                        setCurrentItem((prev) => ({
+                          ...prev,
+                          product_items: clonedProductsItems,
+                        }));
+                      }
+                    }}
+                    size="small"
+                    required
+                  />
+                  <IconButton
+                    color="primary"
+                    aria-label="add to shopping cart"
+                    sx={{
+                      p: 0,
+                      m: 0,
+                      ml: "auto",
+                    }}
+                  >
+                    <DeleteIcon
+                      color="error"
+                      sx={{ fontSize: 30 }}
+                      onClick={(e) => {
+                        const clonedProductsItems = [
+                          ...currentItem.product_items,
+                        ];
+                        clonedProductsItems.splice(index, 1);
+                        setCurrentItem((prev) => ({
+                          ...prev,
+                          product_items: clonedProductsItems,
+                        }));
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+              ))}
             <Button
               color="secondary"
               component="label"
@@ -556,7 +706,188 @@ export default function Form({
             </Button>
           </Box>
         )}
-
+        {item === "service" && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "15px",
+            }}
+          >
+            <TextField
+              label={t("form.enName")}
+              id="en_name"
+              value={currentItem?.name?.en}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    en: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.arName")}
+              id="ar_name"
+              value={currentItem?.name?.ar}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    ar: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+              dir="rtl"
+            />
+            <TextField
+              label={t("form.code")}
+              id="code"
+              value={currentItem?.code}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  code: e.target.value,
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.purchase_price")}
+              id="purchase price"
+              // value={removeTrailingZeros(currentItem?.purchase_price)}
+              value={currentItem?.purchase_price}
+              onChange={(e) => {
+                const regex = /^[0-9.]*$/;
+                // If input value matches the regex or it's an empty string, update the state
+                if (e.target.value === "" || regex.test(e.target.value)) {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    purchase_price: e.target.value,
+                  }));
+                }
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.sales_price")}
+              id="sales price"
+              // value={removeTrailingZeros(currentItem?.sales_price)}
+              value={currentItem?.sales_price}
+              onChange={(e) => {
+                const regex = /^[0-9.]*$/;
+                // If input value matches the regex or it's an empty string, update the state
+                if (e.target.value === "" || regex.test(e.target.value)) {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    sales_price: e.target.value,
+                  }));
+                }
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <FormControl className="half_width" size="small" required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={currentItem?.category}
+                label="Category"
+                onChange={(e) => {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    category: +e.target.value,
+                  }));
+                }}
+              >
+                {/* <MenuItem value="">No Category Chosen</MenuItem> */}
+                {categories?.map((category) => (
+                  <MenuItem value={category.id}>{category.name.en}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.disabled}
+                  onChange={(e) => {
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      disabled: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label={t("form.disabled")}
+            />
+            {/* <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.has_item}
+                  onChange={(e) => {
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      has_item: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label={t("form.has_item")}
+            /> */}
+            <Button
+              color="secondary"
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              size="small"
+              sx={{
+                border: "1px dashed #8d8d8d",
+              }}
+            >
+              Upload image
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(e) => {
+                  // console.log(e.target.files[0]);
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    image: e.target.files[0],
+                  }));
+                }}
+              />
+            </Button>
+          </Box>
+        )}
         {/* dragable image */}
         {/* <label htmlFor="file-input">
           <Box
