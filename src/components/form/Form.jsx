@@ -1,0 +1,669 @@
+import { useState, useEffect } from "react";
+
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { useMediaQuery } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { MySwitch } from "components/my-switch";
+import { Box } from "@mui/material";
+import axios from "axios";
+import { baseUrl, notifySuccess, notifyError } from "../../utils/generalUtils";
+import { useTranslation } from "react-i18next";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+const removeTrailingZeros = (numberString) => {
+  // Convert the string to a number to remove trailing zeros
+  const number = parseFloat(numberString);
+
+  // Convert the number back to a string
+  const result = number.toString();
+
+  return result;
+};
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+export default function Form({
+  // formOpen,
+  setFormOpen,
+  setForceUpdate,
+  currentItem,
+  setCurrentItem,
+  // type,
+  item,
+}) {
+  const { t } = useTranslation();
+  const [categories, setCategories] = useState([]);
+  console.log("currentItem=====>", currentItem);
+  const downSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: downSm ? 330 : 550,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    outline: "none",
+    border: "none",
+    borderRadius: "4px !important",
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  };
+  const submit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    setFormOpen(false);
+
+    // -----
+    let method = currentItem.id ? "patch" : "post";
+    let body;
+    let headers = {
+      // in case not image (binary), form-data will cause no issues
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
+    };
+
+    if (item === "unit") {
+      body = {
+        name: currentItem.name,
+      };
+    }
+    if (item === "category") {
+      body = {
+        name: currentItem.name,
+        code: currentItem.code,
+        disabled: currentItem.disabled,
+        parent_category: currentItem.parent_category?.id,
+        purchase_category: currentItem.purchase_category,
+        image: currentItem.image,
+      };
+    }
+    if (item === "product") {
+      body = {
+        name: currentItem.name,
+        code: currentItem.code,
+        disabled: currentItem.disabled,
+        has_item: currentItem.has_item,
+        purchase_price: currentItem.purchase_price,
+        sales_price: currentItem.sales_price,
+        category: currentItem.category,
+        image: currentItem.image,
+      };
+    }
+    if (!body.image) {
+      delete headers["Content-Type"];
+      delete body.image;
+    } else {
+      body.name = JSON.stringify(currentItem.name, null, 2);
+    }
+    // if (method === "post") {
+    //   body.name = JSON.stringify(currentItem.name, null, 2);
+    // }
+    let endpoint = currentItem.id ? `${item}/${currentItem.id}` : item;
+
+    axios[method](`${baseUrl}/productsServices/${endpoint}`, body, {
+      headers,
+    })
+      .then((res) => {
+        setForceUpdate((prev) => !prev);
+      })
+      .catch((err) => {
+        notifyError("Something went wrong!");
+        setForceUpdate((prev) => !prev);
+      });
+    setCurrentItem({});
+  };
+  useEffect(() => {
+    // remove image url for 1st time, as it needed as a binary not url (if present or not, as it will be removed later from headers and body in any case if have no value)
+    setCurrentItem((prev) => ({ ...prev, image: "" }));
+    if (item === "category" || item === "product") {
+      axios
+        .get(`${baseUrl}/productsServices/category?parent=false`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
+          },
+        })
+        .then((res) => {
+          setCategories(res.data);
+        })
+        .catch((err) => {
+          notifyError("Something went wrong!");
+        });
+    }
+  }, []);
+  return (
+    <Modal
+      // open={formOpen}
+      open={true}
+      onClose={() => {
+        setFormOpen(false);
+        setCurrentItem({});
+      }}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box component="form" sx={style} onSubmit={submit}>
+        <Box sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+          {currentItem.id ? "Update" : "Create"} {item}
+        </Box>
+        {item === "unit" && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "15px",
+            }}
+          >
+            <TextField
+              label={t("form.enName")}
+              id="en_name"
+              value={currentItem?.name?.en}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    en: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.arName")}
+              id="ar_name"
+              value={currentItem?.name?.ar}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    ar: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+              dir="rtl"
+            />
+          </Box>
+        )}
+        {item === "category" && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "15px",
+            }}
+          >
+            <TextField
+              label={t("form.enName")}
+              id="en_name"
+              value={currentItem?.name?.en}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    en: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.arName")}
+              id="ar_name"
+              value={currentItem?.name?.ar}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    ar: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+              dir="rtl"
+            />
+            <TextField
+              label={t("form.code")}
+              id="code"
+              value={currentItem?.code}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  code: e.target.value,
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            {/* don't show if it's a parent (has children) */}
+            {!currentItem.child_categories?.[0]?.id &&
+              categories.length > 0 && (
+                <FormControl className="half_width" size="small">
+                  <InputLabel>Parent Category</InputLabel>
+                  <Select
+                    value={currentItem?.parent_category?.id}
+                    label="Parent Category"
+                    onChange={(e) => {
+                      setCurrentItem((prev) => ({
+                        ...prev,
+                        parent_category: {
+                          ...prev.parent_category,
+                          id: e.target.value,
+                        },
+                      }));
+                    }}
+                  >
+                    <MenuItem value="">No Parent Category</MenuItem>
+                    {/* {categories
+                  ?.filter((category) => category.id !== currentItem.id)
+                  ?.map((category) => (
+                    <MenuItem value={category.id}>
+                      {`category.name.en (${category.code})`}
+                    </MenuItem>
+                  ))} */}
+                    {categories?.map((category) => (
+                      <MenuItem value={category.id}>
+                        {`category.name.en (${category.code})`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.disabled}
+                  onChange={(e) => {
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      disabled: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label="Disabled"
+            />
+            <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.purchase_category}
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      purchase_category: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label="Purchase Category"
+            />
+            <Button
+              color="secondary"
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              size="small"
+              sx={{
+                border: "1px dashed #8d8d8d",
+              }}
+            >
+              Upload image
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(e) => {
+                  // console.log(e.target.files[0]);
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    image: e.target.files[0],
+                  }));
+                }}
+              />
+            </Button>
+          </Box>
+        )}
+        {item === "product" && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "15px",
+            }}
+          >
+            <TextField
+              label={t("form.enName")}
+              id="en_name"
+              value={currentItem?.name?.en}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    en: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.arName")}
+              id="ar_name"
+              value={currentItem?.name?.ar}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  name: {
+                    ...prev.name,
+                    ar: e.target.value,
+                  },
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+              dir="rtl"
+            />
+            <TextField
+              label={t("form.code")}
+              id="code"
+              value={currentItem?.code}
+              onChange={(e) => {
+                setCurrentItem((prev) => ({
+                  ...prev,
+                  code: e.target.value,
+                }));
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.purchase_price")}
+              id="purchase price"
+              // value={removeTrailingZeros(currentItem?.purchase_price)}
+              value={currentItem?.purchase_price}
+              onChange={(e) => {
+                const regex = /^[0-9.]*$/;
+                // If input value matches the regex or it's an empty string, update the state
+                if (e.target.value === "" || regex.test(e.target.value)) {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    purchase_price: e.target.value,
+                  }));
+                }
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <TextField
+              label={t("form.sales_price")}
+              id="sales price"
+              // value={removeTrailingZeros(currentItem?.sales_price)}
+              value={currentItem?.sales_price}
+              onChange={(e) => {
+                const regex = /^[0-9.]*$/;
+                // If input value matches the regex or it's an empty string, update the state
+                if (e.target.value === "" || regex.test(e.target.value)) {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    sales_price: e.target.value,
+                  }));
+                }
+              }}
+              size="small"
+              required
+              className="half_width"
+            />
+            <FormControl className="half_width" size="small" required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={currentItem?.category}
+                label="Category"
+                onChange={(e) => {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    category: +e.target.value,
+                  }));
+                }}
+              >
+                {/* <MenuItem value="">No Category Chosen</MenuItem> */}
+                {categories?.map((category) => (
+                  <MenuItem value={category.id}>{category.name.en}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.disabled}
+                  onChange={(e) => {
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      disabled: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label={t("form.disabled")}
+            />
+            <FormControlLabel
+              sx={{
+                width: "100%",
+                "& span": {
+                  fontSize: "14px !important",
+                },
+              }}
+              control={
+                <Switch
+                  checked={currentItem?.has_item}
+                  onChange={(e) => {
+                    setCurrentItem((prev) => ({
+                      ...prev,
+                      has_item: e.target.checked,
+                    }));
+                  }}
+                  color="success"
+                />
+              }
+              label={t("form.has_item")}
+            />
+            <Button
+              color="secondary"
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              size="small"
+              sx={{
+                border: "1px dashed #8d8d8d",
+              }}
+            >
+              Upload image
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(e) => {
+                  // console.log(e.target.files[0]);
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    image: e.target.files[0],
+                  }));
+                }}
+              />
+            </Button>
+          </Box>
+        )}
+
+        {/* dragable image */}
+        {/* <label htmlFor="file-input">
+          <Box
+            component="img"
+            src={drag}
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: { xs: "300px", md: "500px" },
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+          <Box
+            component="input"
+            onChange={(e) => {
+              setCertificate(e.target.files[0]);
+              localStorage.setItem(
+                "certificate",
+                replaceEnglishWithArabic(e.target.files[0].name)
+              );
+            }}
+            id="file-input"
+            type="file"
+            style={{ display: "none" }} // Hide the input element
+            multiple
+          />
+        </label> */}
+
+        {/* <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "15px",
+          }}
+        >
+          <TextField
+            label="English Name1"
+            id="en_name"
+            defaultValue={""}
+            size="small"
+            required
+            className="half_width"
+          />
+          <TextField
+            label="English Name2"
+            id="en_name"
+            defaultValue={""}
+            size="small"
+            required
+            className="half_width"
+          />
+          <FormControl
+            className="half_width"
+            sx={{ mb: "10px", borderRadius: "8px !important" }}
+            size="small"
+            style={{ borderRadius: "4px !important" }}
+          >
+            <InputLabel
+              id="demo-select-small-label"
+              style={{ borderRadius: "5px !important" }}
+            >
+              Type
+            </InputLabel>
+            <Select
+              style={{ borderRadius: "5px !important" }}
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={""}
+              label="Type"
+              onChange={() => {}}
+            >
+              <MenuItem value="plan">Plans</MenuItem>
+              <MenuItem value="currency">Currency</MenuItem>
+              <MenuItem value="disease">Disease</MenuItem>
+              <MenuItem value="broker">Broker</MenuItem>
+            </Select>
+          </FormControl>
+          <Box
+            className="input_container_full"
+            sx={{ display: "flex", flexWrap: "wrap", gap: "15px" }}
+          >
+            {["", "", "", ""].map((item, index) => (
+              <MySwitch
+                user={{ is_active: true }}
+                color={currentItem.id ? "primary" : "success"}
+              />
+            ))}
+          </Box>
+        </Box> */}
+
+        <Button
+          type="submit"
+          variant="contained"
+          color={currentItem.id ? "primary" : "success"}
+          sx={{
+            color: "#fff",
+            transition: "opacity .3s",
+            "&:hover": {
+              backgroundColor: (theme) =>
+                theme.palette[currentItem.id ? "primary" : "success"].main,
+              opacity: ".8",
+            },
+          }}
+        >
+          {currentItem.id ? "Update" : "Create"}
+        </Button>
+      </Box>
+    </Modal>
+  );
+}
