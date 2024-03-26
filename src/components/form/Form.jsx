@@ -658,7 +658,7 @@ export default function Form({
                       }}
                     >
                       {/* <MenuItem value="">No Category Chosen</MenuItem> */}
-                      {items?.results?.map((item) => (
+                      {items?.map((item) => (
                         <MenuItem value={item.id}>{item.name.en}</MenuItem>
                       ))}
                     </Select>
