@@ -285,9 +285,9 @@ const CategoriesPage = () => {
                         // setForceUpdate={setForceUpdate}
                       /> */}
                       {item.purchase_category ? (
-                        <div className="green">Purchase</div>
+                        <div className="orange">Purchase</div>
                       ) : (
-                        <div className="red">Sales</div>
+                        <div className="orange">Sales</div>
                       )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
