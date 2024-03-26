@@ -42,11 +42,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 // ==============================|| Component ||============================== //
-const ServicesPage = () => {
+const ItemsPage = () => {
   const [data, setData] = useState({});
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentItem, setCurrentItem] = useState({});
+  const [currentItem, setCurrentItem] = useState({
+    // these need to have initial value, as in create, in not found in current item, will be undefined, so beak controlling in controlled inputs
+    price: "",
+    min_quantity: "",
+    quantity: "",
+  });
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -59,7 +64,7 @@ const ServicesPage = () => {
       ? `page=${page}&paginate=true&search=${searchQuery}`
       : `page=${page}&paginate=true`;
     axios
-      .get(`${baseUrl}/productsServices/services?${queryParams}`, {
+      .get(`${baseUrl}/productsServices/items?${queryParams}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
         },
@@ -94,7 +99,7 @@ const ServicesPage = () => {
         setDialogOpen={setDialogOpen}
         setIsLoading={setIsLoading}
         setForceUpdate={setForceUpdate}
-        item="service"
+        item="item"
         currentItem={currentItem}
         setCurrentItem={setCurrentItem}
       />
@@ -105,7 +110,7 @@ const ServicesPage = () => {
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
           setIsLoading={setIsLoading}
-          item="service"
+          item="item"
         />
       )}
       <Box
@@ -224,9 +229,10 @@ const ServicesPage = () => {
                   <StyledTableCell align="center">Active</StyledTableCell>
                   <StyledTableCell align="center">Code</StyledTableCell>
                   <StyledTableCell align="center">Category</StyledTableCell>
-                  <StyledTableCell align="center">Sales Price</StyledTableCell>
+                  <StyledTableCell align="center">Price</StyledTableCell>
+                  <StyledTableCell align="center">Quantity</StyledTableCell>
                   <StyledTableCell align="center">
-                    Purchase Price
+                    Min. Quantity
                   </StyledTableCell>
                   <StyledTableCell align="center">Image</StyledTableCell>
                   <StyledTableCell align="center" sx={{ width: "50px" }}>
@@ -264,10 +270,13 @@ const ServicesPage = () => {
                       }
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {item.sales_price}
+                      {item.price}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {item.purchase_price}
+                      {item.quantity}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {item.min_quantity}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {item.image ? (
@@ -339,4 +348,4 @@ const ServicesPage = () => {
     </>
   );
 };
-export default ServicesPage;
+export default ItemsPage;

@@ -47,6 +47,7 @@ const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentItem, setCurrentItem] = useState({
+    // these need to have initial value, as in create, in not found in current item, will be undefined, so beak controlling in controlled inputs
     product_items: [],
     purchase_price: "",
     sales_price: "",
@@ -224,21 +225,17 @@ const ProductsPage = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Disabled</StyledTableCell>
-                  <StyledTableCell align="center">Has Item?</StyledTableCell>
-                  <StyledTableCell align="center">Category</StyledTableCell>
-                  <StyledTableCell align="center">Image</StyledTableCell>
+                  <StyledTableCell align="center">English Name</StyledTableCell>
+                  <StyledTableCell align="center">Arabic Name</StyledTableCell>
+                  <StyledTableCell align="center">Active</StyledTableCell>
                   <StyledTableCell align="center">Code</StyledTableCell>
-                  <StyledTableCell align="center">
-                    English Product Name
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Arabic Product Name
-                  </StyledTableCell>
+                  <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">Sales Price</StyledTableCell>
                   <StyledTableCell align="center">
                     Purchase Price
                   </StyledTableCell>
+                  <StyledTableCell align="center">Image</StyledTableCell>
+                  <StyledTableCell align="center">Has Item?</StyledTableCell>
                   <StyledTableCell align="center" sx={{ width: "50px" }}>
                     Edit
                   </StyledTableCell>
@@ -251,18 +248,20 @@ const ProductsPage = () => {
                 {data.results.map((item, i) => (
                   <StyledTableRow key={item.id}>
                     <StyledTableCell align="center">
+                      {item.name.en}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {item.name.ar}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
                       {item.disabled ? (
-                        <div className="green">Yes</div>
-                      ) : (
                         <div className="red">No</div>
+                      ) : (
+                        <div className="green">Yes</div>
                       )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {item.has_item ? (
-                        <div className="green">Yes</div>
-                      ) : (
-                        <div className="red">No</div>
-                      )}
+                      <Box className="black">{item.code}</Box>
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {
@@ -271,7 +270,12 @@ const ProductsPage = () => {
                         )?.[0]?.name?.en
                       }
                     </StyledTableCell>
-
+                    <StyledTableCell align="center">
+                      {item.sales_price}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {item.purchase_price}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {item.image ? (
                         <Box
@@ -289,19 +293,11 @@ const ProductsPage = () => {
                       )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Box className="black">{item.code}</Box>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.name.en}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.name.ar}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.sales_price}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.purchase_price}
+                      {item.has_item ? (
+                        <div className="green">Yes</div>
+                      ) : (
+                        <div className="red">No</div>
+                      )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <IconButton

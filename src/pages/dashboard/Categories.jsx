@@ -223,27 +223,19 @@ const CategoriesPage = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Disabled</StyledTableCell>
-                  <StyledTableCell align="center">Image</StyledTableCell>
+                  <StyledTableCell align="center">English Name</StyledTableCell>
+                  <StyledTableCell align="center">Arabic Name</StyledTableCell>
+                  <StyledTableCell align="center">Active</StyledTableCell>
                   <StyledTableCell align="center">Code</StyledTableCell>
+                  <StyledTableCell align="center">Type</StyledTableCell>
                   <StyledTableCell align="center">
-                    English Category Name
+                    Category or Subcategory
                   </StyledTableCell>
+                  <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">
-                    Arabic Category Name
+                    Subcategories
                   </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Purchase Category
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Parent or Child
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Parent Category
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Child Categories
-                  </StyledTableCell>
+                  <StyledTableCell align="center">Image</StyledTableCell>
                   <StyledTableCell align="center" sx={{ width: "50px" }}>
                     Edit
                   </StyledTableCell>
@@ -256,41 +248,6 @@ const CategoriesPage = () => {
                 {data.results.map((item, i) => (
                   <StyledTableRow key={item.id}>
                     <StyledTableCell align="center">
-                      {/* <MySwitch
-                        item={item}
-                        endpoint="/productsServices/category"
-                        key="disabled"
-                        id={item.id}
-                        initialStatus={item.disabled}
-                        color="success"
-                        // setForceUpdate={setForceUpdate}
-                      /> */}
-                      {item.disabled ? (
-                        <div className="green">Yes</div>
-                      ) : (
-                        <div className="red">No</div>
-                      )}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.image ? (
-                        <Box
-                          component="a"
-                          href={item.image}
-                          target="_blank"
-                          sx={{
-                            color: "blue",
-                          }}
-                        >
-                          Image
-                        </Box>
-                      ) : (
-                        "-"
-                      )}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Box className="black">{item.code}</Box>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
                       {item.name.en}
                     </StyledTableCell>
                     <StyledTableCell align="center">
@@ -302,14 +259,35 @@ const CategoriesPage = () => {
                         endpoint="/productsServices/category"
                         key="disabled"
                         id={item.id}
+                        initialStatus={item.disabled}
+                        color="success"
+                        // setForceUpdate={setForceUpdate}
+                      /> */}
+                      {item.disabled ? (
+                        <div className="red">No</div>
+                      ) : (
+                        <div className="green">Yes</div>
+                      )}
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <Box className="black">{item.code}</Box>
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      {/* <MySwitch
+                        item={item}
+                        endpoint="/productsServices/category"
+                        key="disabled"
+                        id={item.id}
                         initialStatus={item.purchase_category}
                         color="success"
                         // setForceUpdate={setForceUpdate}
                       /> */}
                       {item.purchase_category ? (
-                        <div className="green">Yes</div>
+                        <div className="green">Purchase</div>
                       ) : (
-                        <div className="red">No</div>
+                        <div className="red">Sales</div>
                       )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
@@ -322,7 +300,7 @@ const CategoriesPage = () => {
                             p: "4px",
                           }}
                         >
-                          Child
+                          Subcategory
                         </Box>
                       ) : item.child_categories.length > 0 ? (
                         <Box
@@ -333,7 +311,7 @@ const CategoriesPage = () => {
                             p: "4px",
                           }}
                         >
-                          Parent
+                          Category
                         </Box>
                       ) : (
                         <Box>-</Box>
@@ -358,7 +336,7 @@ const CategoriesPage = () => {
                               size="small"
                               endIcon={<ArrowDropDownIcon />}
                             >
-                              Children
+                              Subcategories
                             </Button>
                             <Menu
                               sx={{ cursor: "default !important" }}
@@ -382,6 +360,22 @@ const CategoriesPage = () => {
                             </Menu>
                           </div>
                         </>
+                      ) : (
+                        "-"
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {item.image ? (
+                        <Box
+                          component="a"
+                          href={item.image}
+                          target="_blank"
+                          sx={{
+                            color: "blue",
+                          }}
+                        >
+                          Image
+                        </Box>
                       ) : (
                         "-"
                       )}
