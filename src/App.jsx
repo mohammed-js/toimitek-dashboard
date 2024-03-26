@@ -16,6 +16,9 @@ import { routes } from "./routes";
 import { createCustomTheme } from "./theme";
 // SITE SETTINGS CUSTOM DEFINED HOOK
 import useSettings from "hooks/useSettings";
+// TOAST
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // I18N FILE
 import "./i18n";
 import "./App.css";
@@ -43,6 +46,7 @@ const App = () => {
           </AuthProvider>
         </ThemeProvider>
       </StyledEngineProvider>
+      <ToastContainer />
     </LocalizationProvider>
   );
 };

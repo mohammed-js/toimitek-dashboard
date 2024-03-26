@@ -65,8 +65,28 @@ export default function MyDialog({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDisagree}>Disagree</Button>
-          <Button onClick={handleAgree}>Agree</Button>
+          <Button
+            onClick={handleDisagree}
+            sx={{
+              bgcolor: (theme) => theme.palette.primary.main,
+              "&:hover": {
+                bgcolor: (theme) => theme.palette.primary.main,
+              },
+            }}
+          >
+            Disagree
+          </Button>
+          <Button
+            onClick={handleAgree}
+            sx={{
+              bgcolor: (theme) => theme.palette.primary.main,
+              "&:hover": {
+                bgcolor: (theme) => theme.palette.primary.main,
+              },
+            }}
+          >
+            Agree
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
