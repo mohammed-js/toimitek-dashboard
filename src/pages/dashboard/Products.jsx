@@ -333,23 +333,25 @@ const ProductsPage = () => {
         </>
       )}
 
-      {Array.isArray(data?.results) && data?.results.length == 0 && (
-        <Box
-          component="img"
-          src="/empty.png"
-          sx={{
-            height: "300px",
-            fontSize: "30px",
-            borderRadius: "4px !important",
-            backgroundColor: "#fff",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mx: "auto",
-            maxWidth: "100%",
-          }}
-        />
-      )}
+      {Array.isArray(data?.results) &&
+        data?.results.length == 0 &&
+        !isLoading && (
+          <Box
+            component="img"
+            src="/empty.png"
+            sx={{
+              height: "300px",
+              fontSize: "30px",
+              borderRadius: "4px !important",
+              backgroundColor: "#fff",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "auto",
+              maxWidth: "100%",
+            }}
+          />
+        )}
     </>
   );
 };

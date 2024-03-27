@@ -414,25 +414,25 @@ const CategoriesPage = () => {
         </>
       )}
 
-      {Array.isArray(data?.results) && data?.results.length == 0 && (
-        <Box
-          component="img"
-          src="/empty.png"
-          sx={{
-            height: "300px",
-            fontSize: "30px",
-            // boxShadow:
-            //   "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px",
-            borderRadius: "4px !important",
-            backgroundColor: "#fff",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mx: "auto",
-            maxWidth: "100%",
-          }}
-        />
-      )}
+      {Array.isArray(data?.results) &&
+        data?.results.length == 0 &&
+        !isLoading && (
+          <Box
+            component="img"
+            src="/empty.png"
+            sx={{
+              height: "300px",
+              fontSize: "30px",
+              borderRadius: "4px !important",
+              backgroundColor: "#fff",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "auto",
+              maxWidth: "100%",
+            }}
+          />
+        )}
     </>
   );
 };

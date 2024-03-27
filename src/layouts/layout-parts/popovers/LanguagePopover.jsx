@@ -84,7 +84,7 @@ const LanguagePopover = () => {
           <MenuItem
             key={languageOptions[language].label}
             onClick={() => {
-              handleChange(language, options.dir);
+              // handleChange(language, options.dir);
             }}
           >
             {languageOptions[language].label}
