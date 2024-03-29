@@ -19,23 +19,23 @@ export const navigationsEn = [
     children: [
       {
         name: "Units",
-        path: "/dashboard/units",
+        path: "/units",
       },
       {
         name: "Categories",
-        path: "/dashboard/categories",
+        path: "/categories",
       },
       {
         name: "Products",
-        path: "/dashboard/products",
+        path: "/products",
       },
       {
         name: "Services",
-        path: "/dashboard/services",
+        path: "/services",
       },
       {
         name: "Items",
-        path: "/dashboard/items",
+        path: "/items",
       },
     ],
   },
@@ -93,23 +93,23 @@ export const navigationsAr = [
     children: [
       {
         name: "الوحدات",
-        path: "/dashboard/units",
+        path: "/units",
       },
       {
         name: "الفئات",
-        path: "/dashboard/categories",
+        path: "/categories",
       },
       {
         name: "المنتجات",
-        path: "/dashboard/products",
+        path: "/products",
       },
       {
         name: "الخدمات",
-        path: "/dashboard/services",
+        path: "/services",
       },
       {
         name: "Items",
-        path: "/dashboard/items",
+        path: "/items",
       },
     ],
   },

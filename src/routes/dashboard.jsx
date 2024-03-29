@@ -13,7 +13,7 @@ const Items = Loadable(lazy(() => import("pages/dashboard/Items")));
 
 export const DashboardRoutes = [
   {
-    path: "dashboard",
+    path: "",
     element: (
       <AuthGuard>
         <DashboardLayout>
