@@ -53,7 +53,6 @@ export default function Form({
 }) {
   const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
-  console.log("categories=====>", categories);
   const [items, setItems] = useState([]);
   console.log("currentItem=====>", currentItem);
   const downSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -150,7 +149,6 @@ export default function Form({
         body.product_items = JSON.stringify(currentItem.product_items, null, 2);
       }
     }
-    console.log(body);
     // if (method === "post") {
     //   body.name = JSON.stringify(currentItem.name, null, 2);
     // }
@@ -198,7 +196,6 @@ export default function Form({
           },
         })
         .then((res) => {
-          console.log("zzzzzzzzzzzzz", res.data);
           setItems(res.data);
         })
         .catch((err) => {
@@ -359,6 +356,22 @@ export default function Form({
                   </Select>
                 </FormControl>
               )}
+            <FormControl className="half_width" size="small" required>
+              <InputLabel>Category Type</InputLabel>
+              <Select
+                value={currentItem?.purchase_category}
+                label="Category Type"
+                onChange={(e) => {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    purchase_category: e.target.value,
+                  }));
+                }}
+              >
+                <MenuItem value={true}>Purchase Category</MenuItem>
+                <MenuItem value={false}>Sales Category</MenuItem>
+              </Select>
+            </FormControl>
             <FormControlLabel
               sx={{
                 width: "100%",
@@ -380,31 +393,7 @@ export default function Form({
               }
               label={currentItem?.disabled ? "Disabled" : "Active"}
             />
-            <FormControlLabel
-              sx={{
-                width: "100%",
-                "& span": {
-                  fontSize: "14px !important",
-                },
-              }}
-              control={
-                <Switch
-                  checked={currentItem?.purchase_category}
-                  onChange={(e) => {
-                    setCurrentItem((prev) => ({
-                      ...prev,
-                      purchase_category: e.target.checked,
-                    }));
-                  }}
-                  color="success"
-                />
-              }
-              label={
-                currentItem?.purchase_category
-                  ? "Purchase Category"
-                  : "Sales Category"
-              }
-            />
+
             <Button
               color="secondary"
               component="label"
@@ -421,7 +410,6 @@ export default function Form({
               <VisuallyHiddenInput
                 type="file"
                 onChange={(e) => {
-                  // console.log(e.target.files[0]);
                   setCurrentItem((prev) => ({
                     ...prev,
                     image: e.target.files[0],
@@ -493,7 +481,7 @@ export default function Form({
               label={t("form.purchase_price")}
               id="purchase price"
               // value={removeTrailingZeros(currentItem?.purchase_price)}
-              value={currentItem?.purchase_price}
+              value={currentItem?.purchase_price || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 // If input value matches the regex or it's an empty string, update the state
@@ -512,7 +500,7 @@ export default function Form({
               label={t("form.sales_price")}
               id="sales price"
               // value={removeTrailingZeros(currentItem?.sales_price)}
-              value={currentItem?.sales_price}
+              value={currentItem?.sales_price || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 // If input value matches the regex or it's an empty string, update the state
@@ -643,10 +631,9 @@ export default function Form({
                   <FormControl className="third_width" size="small" required>
                     <InputLabel>Item</InputLabel>
                     <Select
-                      value={item?.item}
+                      value={item?.item || ""}
                       label="Item"
                       onChange={(e) => {
-                        console.log("after");
                         const clonedProductsItems = [
                           ...currentItem.product_items,
                         ];
@@ -727,7 +714,6 @@ export default function Form({
               <VisuallyHiddenInput
                 type="file"
                 onChange={(e) => {
-                  // console.log(e.target.files[0]);
                   setCurrentItem((prev) => ({
                     ...prev,
                     image: e.target.files[0],
@@ -799,7 +785,7 @@ export default function Form({
               label={t("form.purchase_price")}
               id="purchase price"
               // value={removeTrailingZeros(currentItem?.purchase_price)}
-              value={currentItem?.purchase_price}
+              value={currentItem?.purchase_price || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 // If input value matches the regex or it's an empty string, update the state
@@ -818,7 +804,7 @@ export default function Form({
               label={t("form.sales_price")}
               id="sales price"
               // value={removeTrailingZeros(currentItem?.sales_price)}
-              value={currentItem?.sales_price}
+              value={currentItem?.sales_price || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 // If input value matches the regex or it's an empty string, update the state
@@ -909,7 +895,6 @@ export default function Form({
               <VisuallyHiddenInput
                 type="file"
                 onChange={(e) => {
-                  // console.log(e.target.files[0]);
                   setCurrentItem((prev) => ({
                     ...prev,
                     image: e.target.files[0],
@@ -980,7 +965,7 @@ export default function Form({
             <TextField
               label="price"
               id="price"
-              value={currentItem?.price}
+              value={currentItem?.price || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 if (e.target.value === "" || regex.test(e.target.value)) {
@@ -997,7 +982,7 @@ export default function Form({
             <TextField
               label="quantity"
               id="quantity"
-              value={currentItem?.quantity}
+              value={currentItem?.quantity || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 if (e.target.value === "" || regex.test(e.target.value)) {
@@ -1014,7 +999,7 @@ export default function Form({
             <TextField
               label="min_quantity"
               id="min_quantity"
-              value={currentItem?.min_quantity}
+              value={currentItem?.min_quantity || ""}
               onChange={(e) => {
                 const regex = /^[0-9.]*$/;
                 if (e.target.value === "" || regex.test(e.target.value)) {
@@ -1084,7 +1069,6 @@ export default function Form({
               <VisuallyHiddenInput
                 type="file"
                 onChange={(e) => {
-                  // console.log(e.target.files[0]);
                   setCurrentItem((prev) => ({
                     ...prev,
                     image: e.target.files[0],

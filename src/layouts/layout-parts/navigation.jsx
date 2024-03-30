@@ -14,7 +14,7 @@ export const navigationsEn = [
   //   label: "Dashboard",
   // },
   {
-    name: "Catalog",
+    name: "Product / Services",
     icon: duotone.UserList,
     children: [
       {

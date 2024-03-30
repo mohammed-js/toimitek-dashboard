@@ -49,9 +49,9 @@ const ProductsPage = () => {
   const [currentItem, setCurrentItem] = useState({
     // these need to have initial value, as in create, in not found in current item, will be undefined, so beak controlling in controlled inputs
     product_items: [],
-    purchase_price: "",
-    sales_price: "",
-    item: "",
+    // purchase_price: "",
+    // sales_price: "",
+    // item: "",
   });
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");

@@ -48,9 +48,9 @@ const ItemsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentItem, setCurrentItem] = useState({
     // these need to have initial value, as in create, in not found in current item, will be undefined, so beak controlling in controlled inputs
-    price: "",
-    min_quantity: "",
-    quantity: "",
+    // price: "",
+    // min_quantity: "",
+    // quantity: "",
   });
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");

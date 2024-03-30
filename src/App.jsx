@@ -4,6 +4,8 @@ import {
   CssBaseline,
   StyledEngineProvider,
 } from "@mui/material";
+import { Navigate } from "react-router-dom";
+
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 // AUTH CONTEXT FILE
