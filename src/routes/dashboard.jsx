@@ -8,7 +8,7 @@ import DashboardLayout from "layouts/dashboard/DashboardLayout";
 const Units = Loadable(lazy(() => import("pages/dashboard/Units")));
 const Categories = Loadable(lazy(() => import("pages/dashboard/Categories")));
 const Products = Loadable(lazy(() => import("pages/dashboard/Products")));
-const Services = Loadable(lazy(() => import("pages/dashboard/Services")));
+// const Services = Loadable(lazy(() => import("pages/dashboard/Services")));
 const Items = Loadable(lazy(() => import("pages/dashboard/Items")));
 
 export const DashboardRoutes = [
@@ -35,10 +35,10 @@ export const DashboardRoutes = [
         path: "products",
         element: <Products />,
       },
-      {
-        path: "services",
-        element: <Services />,
-      },
+      // {
+      //   path: "services",
+      //   element: <Services />,
+      // },
       {
         path: "items",
         element: <Items />,

@@ -3,6 +3,7 @@ export const baseUrl = "https://riadahit.com/erp/api/v1";
 
 export const localStorageObjectExtractor = (object, key) => {
   var storedObject = JSON.parse(localStorage.getItem(object));
+  console.log(storedObject);
   return storedObject?.[key];
 };
 

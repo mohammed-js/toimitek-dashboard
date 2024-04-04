@@ -14,7 +14,7 @@ export const navigationsEn = [
   //   label: "Dashboard",
   // },
   {
-    name: "Product / Services",
+    name: "Products / Services",
     icon: duotone.UserList,
     children: [
       {
@@ -26,13 +26,13 @@ export const navigationsEn = [
         path: "/categories",
       },
       {
-        name: "Products",
+        name: "Products / Services",
         path: "/products",
       },
-      {
-        name: "Services",
-        path: "/services",
-      },
+      // {
+      //   name: "Services",
+      //   path: "/services",
+      // },
       {
         name: "Items",
         path: "/items",
@@ -100,15 +100,15 @@ export const navigationsAr = [
         path: "/categories",
       },
       {
-        name: "المنتجات",
+        name: "المنتجات / الخدمات",
         path: "/products",
       },
+      // {
+      //   name: "الخدمات",
+      //   path: "/services",
+      // },
       {
-        name: "الخدمات",
-        path: "/services",
-      },
-      {
-        name: "Items",
+        name: "العناصر",
         path: "/items",
       },
     ],

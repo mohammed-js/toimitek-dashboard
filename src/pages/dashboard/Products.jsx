@@ -20,6 +20,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { MyDialog } from "components/myDialog";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 // ==============================|| Styles ||============================== //
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,16 +47,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 // ==============================|| Component ||============================== //
 const ProductsPage = () => {
+  const [pageType, setPageType] = useState("product");
   const [data, setData] = useState({});
+  const [error, setError] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentItem, setCurrentItem] = useState({
-    // these need to have initial value, as in create, in not found in current item, will be undefined, so beak controlling in controlled inputs
-    product_items: [],
-    // purchase_price: "",
-    // sales_price: "",
-    // item: "",
-  });
+  const currentItemInitialValue =
+    pageType === "product"
+      ? {
+          product_items: [],
+        }
+      : {};
+  const [currentItem, setCurrentItem] = useState(currentItemInitialValue);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -65,20 +71,28 @@ const ProductsPage = () => {
       ? `page=${page}&paginate=true&search=${searchQuery}`
       : `page=${page}&paginate=true`;
     axios
-      .get(`${baseUrl}/productsServices/product?${queryParams}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
-        },
-      })
+      .get(
+        `${baseUrl}/productsServices/${
+          pageType === "product" ? "product" : "service"
+        }?${queryParams}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
+          },
+        }
+      )
       .then((res) => {
         setData(res.data);
         setIsLoading(false);
+        setError(false);
       })
       .catch((err) => {
         notifyError("Something went wrong!");
         setIsLoading(false);
+        setError(true);
       });
   }, [page, forceUpdate]);
+
   useEffect(() => {
     axios
       .get(`${baseUrl}/productsServices/category`, {
@@ -100,7 +114,7 @@ const ProductsPage = () => {
         setDialogOpen={setDialogOpen}
         setIsLoading={setIsLoading}
         setForceUpdate={setForceUpdate}
-        item="product"
+        item={pageType === "product" ? "product" : "service"}
         currentItem={currentItem}
         setCurrentItem={setCurrentItem}
       />
@@ -111,9 +125,27 @@ const ProductsPage = () => {
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
           setIsLoading={setIsLoading}
-          item="product"
+          item={pageType === "product" ? "product" : "service"}
         />
       )}
+      <FormControl sx={{ my: 1, minWidth: 120 }} size="small">
+        <InputLabel id="demo-select-small-label">Type</InputLabel>
+        <Select
+          labelId="demo-select-small-label"
+          id="demo-select-small"
+          value={pageType}
+          label="Type"
+          onChange={(e) => {
+            setIsLoading(true);
+            setData({});
+            setPageType(e.target.value);
+            setForceUpdate((prev) => !prev);
+          }}
+        >
+          <MenuItem value="product">Product</MenuItem>
+          <MenuItem value="service">Service</MenuItem>
+        </Select>
+      </FormControl>
       <Box
         sx={{
           display: "flex",
@@ -195,19 +227,35 @@ const ProductsPage = () => {
         />
       )}
 
-      {isLoading ||
-        (categories.length == 0 && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "300px",
-            }}
-          >
-            <CircularProgress size="50px" />
-          </Box>
-        ))}
+      {error && !isLoading && (
+        <Box
+          component="img"
+          src="/error.png"
+          sx={{
+            height: "300px",
+            fontSize: "30px",
+            borderRadius: "4px !important",
+            backgroundColor: "#fff",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mx: "auto",
+            maxWidth: "100%",
+          }}
+        />
+      )}
+      {(isLoading || categories.length == 0) && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "300px",
+          }}
+        >
+          <CircularProgress size="50px" />
+        </Box>
+      )}
       {!isLoading && data?.results?.length > 0 && categories.length > 0 && (
         <>
           <TableContainer
@@ -235,7 +283,9 @@ const ProductsPage = () => {
                     Purchase Price
                   </StyledTableCell>
                   <StyledTableCell align="center">Image</StyledTableCell>
-                  <StyledTableCell align="center">Has Item?</StyledTableCell>
+                  {pageType === "product" && (
+                    <StyledTableCell align="center">Has Item?</StyledTableCell>
+                  )}
                   <StyledTableCell align="center" sx={{ width: "50px" }}>
                     Edit
                   </StyledTableCell>
@@ -292,13 +342,16 @@ const ProductsPage = () => {
                         "-"
                       )}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {item.has_item ? (
-                        <div className="green">Yes</div>
-                      ) : (
-                        <div className="red">No</div>
-                      )}
-                    </StyledTableCell>
+                    {pageType === "product" && (
+                      <StyledTableCell align="center">
+                        {item.has_item ? (
+                          <div className="green">Yes</div>
+                        ) : (
+                          <div className="red">No</div>
+                        )}
+                      </StyledTableCell>
+                    )}
+
                     <StyledTableCell align="center">
                       <IconButton
                         color="primary"

@@ -52,6 +52,8 @@ export default function Form({
   item,
 }) {
   const { t } = useTranslation();
+  const [units, setUnits] = useState([]);
+  console.log(units);
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState([]);
   console.log("currentItem=====>", currentItem);
@@ -129,23 +131,25 @@ export default function Form({
       };
     }
     if (item === "item") {
+      console.log(currentItem);
       body = {
         name: currentItem.name,
         code: currentItem.code,
         disabled: currentItem.disabled,
-        price: currentItem.purchase_price,
+        price: currentItem.price,
         quantity: currentItem.quantity,
-        min_quantity: currentItem.sales_price,
+        min_quantity: currentItem.min_quantity,
+        unit: currentItem.unit,
         category: currentItem.category,
         image: currentItem.image,
       };
     }
-    if (!body.image) {
+    if (!body?.image) {
       delete headers["Content-Type"];
       delete body.image;
     } else {
       body.name = JSON.stringify(currentItem.name, null, 2);
-      if (body.product_items.length > 0) {
+      if (body.product_items?.length > 0) {
         body.product_items = JSON.stringify(currentItem.product_items, null, 2);
       }
     }
@@ -154,7 +158,7 @@ export default function Form({
     // }
     let endpoint = currentItem.id ? `${item}/${currentItem.id}` : item;
 
-    axios[method](`${baseUrl}/productsServices/${endpoint}`, body, {
+    axios[method](`${baseUrl}/productsServices/${endpoint}s`, body, {
       headers,
     })
       .then((res) => {
@@ -167,6 +171,7 @@ export default function Form({
     setCurrentItem({});
   };
   useEffect(() => {
+    console.log(item);
     // remove image url for 1st time, as it needed as a binary not url (if present or not, as it will be removed later from headers and body in any case if have no value)
     setCurrentItem((prev) => ({ ...prev, image: "" }));
     if (
@@ -197,6 +202,20 @@ export default function Form({
         })
         .then((res) => {
           setItems(res.data);
+        })
+        .catch((err) => {
+          notifyError("Something went wrong!");
+        });
+    }
+    if (item === "item") {
+      axios
+        .get(`${baseUrl}/productsServices/unit`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("acc-token")}`,
+          },
+        })
+        .then((res) => {
+          setUnits(res.data);
         })
         .catch((err) => {
           notifyError("Something went wrong!");
@@ -1029,6 +1048,24 @@ export default function Form({
                 {/* <MenuItem value="">No Category Chosen</MenuItem> */}
                 {categories?.map((category) => (
                   <MenuItem value={category.id}>{category.name.en}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl className="half_width" size="small" required>
+              <InputLabel>Unit</InputLabel>
+              <Select
+                value={currentItem?.unit}
+                label="Category"
+                onChange={(e) => {
+                  setCurrentItem((prev) => ({
+                    ...prev,
+                    unit: +e.target.value,
+                  }));
+                }}
+              >
+                {/* <MenuItem value="">No Category Chosen</MenuItem> */}
+                {units?.map((unit) => (
+                  <MenuItem value={unit.id}>{unit.name.en}</MenuItem>
                 ))}
               </Select>
             </FormControl>
